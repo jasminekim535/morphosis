@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>People — Now Institute</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Sofia Sans', sans-serif;
+      background: #fff;
+      color: #111;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page { max-width: 1100px; margin: 0 auto; padding: 40px 32px 100px; }
+
+    /* Nav */
+    .site-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 24px; border-bottom: 1px solid #e0e0e0; margin-bottom: 56px;
+    }
+    .site-logo { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #111; text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #999; text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: #111; }
+    .nav-links a.active { color: #111; font-weight: 700; }
+
+    /* Faculty/Staff/Alumni pills */
+    .people-nav { display: flex; border: 0.75px solid #e5e5e5; width: fit-content; margin-bottom: 40px; }
+    .people-pill { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; padding: 10px 28px; cursor: pointer; border-right: 0.75px solid #e5e5e5; color: #999; transition: all 0.2s; text-decoration: none; }
+    .people-pill:last-child { border-right: none; }
+    .people-pill.active { background: #111; color: #fff; }
+    .people-pill:hover:not(.active) { background: #f5f5f5; color: #111; }
+
+    /* Person selector tabs */
+    .person-selector { display: flex; border-bottom: 1px solid #e5e5e5; margin-bottom: 52px; }
+    .person-tab { font-size: 14px; font-weight: 500; color: #999; padding: 12px 28px 12px 0; margin-right: 28px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
+    .person-tab:hover { color: #111; }
+    .person-tab.active { color: #111; font-weight: 700; border-bottom-color: #111; }
+
+    /* Panel toggle */
+    .profile-panel { display: none; }
+    .profile-panel.active { display: block; }
+
+    /* Person header */
+    .person-header { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-bottom: 72px; align-items: center; }
+    .person-photo { width: 100%; aspect-ratio: 4/5; overflow: hidden; background: #f0ede8; }
+    .person-photo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(10%); display: block; }
+    .person-info { display: flex; flex-direction: column; gap: 24px; }
+    .person-name { font-size: 52px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: #111; }
+    .name-rule { width: 56px; height: 3px; background: #111; }
+    .person-roles { display: flex; flex-direction: column; gap: 14px; }
+    .role-item { display: flex; flex-direction: column; gap: 2px; }
+    .role-label { font-size: 12px; font-weight: 500; color: #999; letter-spacing: 0.06em; text-transform: uppercase; }
+    .role-org { font-size: 17px; font-weight: 500; color: #111; }
+
+    .section-divider { border: none; border-top: 1px solid #e5e5e5; margin: 60px 0; }
+    .section-heading { font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #111; margin-bottom: 28px; }
+
+    /* Profile text */
+    .profile-body { display: flex; flex-direction: column; gap: 20px; }
+    .profile-text { font-size: 16px; line-height: 1.8; color: #444; }
+    .profile-text strong { font-weight: 700; color: #111; }
+
+    /* Education */
+    .edu-list { display: flex; flex-direction: column; gap: 10px; }
+    .edu-card { display: flex; align-items: center; border: 0.75px solid #e5e5e5; padding: 18px 22px; position: relative; }
+    .edu-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #111; }
+    .edu-degree { font-size: 17px; font-weight: 600; color: #111; }
+    .edu-school { font-size: 13px; color: #888; margin-top: 3px; }
+
+    /* Awards */
+    .awards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .awards-single { display: flex; flex-direction: column; gap: 8px; }
+    .award-card { display: flex; gap: 16px; align-items: flex-start; border: 0.75px solid #e5e5e5; padding: 14px 16px; }
+    .award-year { font-size: 13px; font-weight: 700; color: #111; min-width: 38px; padding-top: 1px; }
+    .award-title { font-size: 14px; color: #444; line-height: 1.45; }
+
+    /* Associations */
+    .assoc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .assoc-single { display: flex; flex-direction: column; gap: 8px; }
+    .assoc-card { display: flex; align-items: center; border: 0.75px solid #e5e5e5; padding: 16px 22px; position: relative; }
+    .assoc-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #111; }
+    .assoc-card span { font-size: 14px; color: #444; line-height: 1.4; }
+
+    /* Teaching */
+    .teaching-list { display: flex; flex-direction: column; gap: 10px; }
+    .teaching-card { border: 0.75px solid #e5e5e5; padding: 20px 28px; position: relative; }
+    .teaching-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #111; }
+    .teaching-inst { font-size: 17px; font-weight: 600; color: #111; margin-bottom: 4px; }
+    .teaching-location { font-size: 13px; color: #888; font-style: italic; margin-bottom: 8px; }
+    .teaching-roles { font-size: 14px; color: #555; line-height: 1.75; }
+
+    /* Publications */
+    .pub-list { display: flex; flex-direction: column; gap: 10px; }
+    .pub-card { border: 0.75px solid #e5e5e5; padding: 16px 22px; position: relative; font-size: 14px; color: #444; line-height: 1.55; }
+    .pub-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #111; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .person-header { grid-template-columns: 1fr; gap: 36px; }
+      .person-name { font-size: 40px; }
+      .awards-grid, .assoc-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .page { padding: 24px 20px 60px; }
+      .site-nav { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .nav-links { flex-wrap: wrap; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <nav class="site-nav">
+    <a href="landing.html" class="site-logo">Now Institute</a>
+    <ul class="nav-links">
+      <li><a href="landing.html">About</a></li>
+      <li><a href="landing.html">Research</a></li>
+      <li><a href="index.html" class="active">People</a></li>
+      <li><a href="landing.html">Projects</a></li>
+      <li><a href="landing.html">News</a></li>
+    </ul>
+  </nav>
+
+  <div class="people-nav">
+    <a href="#" class="people-pill active">Faculty</a>
+    <a href="#" class="people-pill">Staff</a>
+    <a href="#" class="people-pill">Alumni</a>
+  </div>
+
+  <div class="person-selector">
+    <div class="person-tab active" data-target="thom">Thom Mayne</div>
+    <div class="person-tab" data-target="eui">Eui-Sung Yi</div>
+  </div>
+
+  <!-- ══════════════════ THOM MAYNE ══════════════════ -->
+  <div id="person-thom" class="profile-panel active">
+
+    <div class="person-header">
+      <div class="person-photo">
+        <!-- Replace src with local file: images/thom-mayne.jpg -->
+        <img src="https://www.figma.com/api/mcp/asset/d05aaa26-63dd-4acc-83fd-136f029641a0" alt="Thom Mayne" />
+      </div>
+      <div class="person-info">
+        <div class="person-name">Thom<br>Mayne</div>
+        <div class="name-rule"></div>
+        <div class="person-roles">
+          <div class="role-item"><div class="role-label">Founding Executive Director</div><div class="role-org">The Now Institute</div></div>
+          <div class="role-item"><div class="role-label">Founding Design Director</div><div class="role-org">Morphosis Architects</div></div>
+          <div class="role-item"><div class="role-label">Distinguished Professor</div><div class="role-org">UCLA Department of Architecture and Urban Design</div></div>
+          <div class="role-item"><div class="role-label">Member</div><div class="role-org">President's Committee on the Arts and Humanities</div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Profile</div>
+    <div class="profile-body">
+      <p class="profile-text"><strong>Thom Mayne</strong> founded Morphosis as a collective architectural practice engaged in cross-disciplinary research and design. As Design Director and thought leader of Morphosis, Mayne provides overall vision and project leadership to the firm. With permanent offices in Los Angeles and New York City, the firm currently employs over 50 architects and designers.</p>
+      <p class="profile-text">Mayne's distinguished honors include the Pritzker Prize (2005) and the AIA Gold Medal (2013). He was appointed to the President's Committee on the Arts and Humanities in 2009, and was honored with the American Institute of Architects Los Angeles Gold Medal in 2000. With Morphosis, Thom Mayne has been the recipient of 25 Progressive Architecture Awards, over 100 American Institute of Architecture Awards and numerous other design recognitions. Under Mayne's direction, the firm has been the subject of various group and solo exhibitions throughout the world, including a large solo exhibition at the Centre Pompidou in Paris in 2006, the Contemporary Art Center in Cincinnati, the Walker Arts Institute in Minneapolis, and a major retrospective at the Netherlands Architectural Institute in 1999.</p>
+      <p class="profile-text">Throughout his career, Mayne has remained active in the academic world. In 1972, he helped to found the Southern California Institute of Architecture. There has always been a symbiotic relationship between Mayne's teaching and practice, evidenced in his concurrent position as Executive Director of the Now Institute at UCLA — a research and design initiative focusing on applying strategic urban thinking to real world issues. He is a tenured Professor at UCLA Architecture and Urban Design since 1993.</p>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Education</div>
+    <div class="edu-list">
+      <div class="edu-card"><div><div class="edu-degree">M.Arch. II</div><div class="edu-school">Harvard — Graduate School of Design</div></div></div>
+      <div class="edu-card"><div><div class="edu-degree">B.Arch.</div><div class="edu-school">University of Southern California</div></div></div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Awards &amp; Distinctions</div>
+    <div class="awards-grid">
+      <div class="award-card"><div class="award-year">2011</div><div class="award-title">Richard J. Neutra Award for Professional Excellence, California State Polytechnic University, Pomona</div></div>
+      <div class="award-card"><div class="award-year">2009</div><div class="award-title">Centennial Medal, American Academy in Rome</div></div>
+      <div class="award-card"><div class="award-year">2008</div><div class="award-title">Edward MacDowell Medal</div></div>
+      <div class="award-card"><div class="award-year">2008</div><div class="award-title">Member, American Academy of Arts and Sciences</div></div>
+      <div class="award-card"><div class="award-year">2008</div><div class="award-title">California College of the Art, Honorary Doctorate of Fine Art</div></div>
+      <div class="award-card"><div class="award-year">2008</div><div class="award-title">New Jersey Institute of Technology, Honorary Doctorate of Humane Letters</div></div>
+      <div class="award-card"><div class="award-year">2007</div><div class="award-title">AIA Los Angeles Presidential Award</div></div>
+      <div class="award-card"><div class="award-year">2007</div><div class="award-title">AIA California Council, The Maybeck Award</div></div>
+      <div class="award-card"><div class="award-year">2006</div><div class="award-title">National Design Award, Cooper-Hewitt National Design Museum</div></div>
+      <div class="award-card"><div class="award-year">2006</div><div class="award-title">Alumni Merit Award, University of Southern California</div></div>
+      <div class="award-card"><div class="award-year">2005</div><div class="award-title">Pritzker Architecture Prize</div></div>
+      <div class="award-card"><div class="award-year">2004</div><div class="award-title">Fellow, American Institute of Architects (FAIA)</div></div>
+      <div class="award-card"><div class="award-year">2001</div><div class="award-title">Chrysler Design Award of Excellence</div></div>
+      <div class="award-card"><div class="award-year">2000</div><div class="award-title">Gold Medal, Los Angeles American Institute of Architects</div></div>
+      <div class="award-card"><div class="award-year">1995</div><div class="award-title">Alumni of the Year, USC</div></div>
+      <div class="award-card"><div class="award-year">1992</div><div class="award-title">Brunner Prize/Award in Architecture, American Academy of Arts and Letters</div></div>
+      <div class="award-card"><div class="award-year">1992</div><div class="award-title">Member Elect, American Academy of Design</div></div>
+      <div class="award-card"><div class="award-year">1987</div><div class="award-title">Rome Prize Fellowship, American Academy in Rome, Italy</div></div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Professional Associations</div>
+    <div class="assoc-grid">
+      <div class="assoc-card"><span>President's Committee on the Arts and Humanities / Member</span></div>
+      <div class="assoc-card"><span>Architecture League of New York / Board</span></div>
+      <div class="assoc-card"><span>American Academy of Arts and Letters / Member</span></div>
+      <div class="assoc-card"><span>Institute of Urban Design / Board</span></div>
+      <div class="assoc-card"><span>American Academy in Rome / Trustee</span></div>
+      <div class="assoc-card"><span>American Academy of Arts and Sciences / Member</span></div>
+      <div class="assoc-card"><span>A+D Architecture and Design Museum Los Angeles / Advisory Board</span></div>
+      <div class="assoc-card"><span>National Academy of Design / Member</span></div>
+      <div class="assoc-card"><span>American Institute of Architects (FAIA)</span></div>
+      <div class="assoc-card"><span>Southern California Institute of Architecture / Board of Trustees</span></div>
+      <div class="assoc-card"><span>Global Green USA / Board</span></div>
+    </div>
+
+  </div><!-- /thom -->
+
+
+  <!-- ══════════════════ EUI-SUNG YI ══════════════════ -->
+  <div id="person-eui" class="profile-panel">
+
+    <div class="person-header">
+      <div class="person-photo">
+        <!-- Replace src with local file: images/eui-sung-yi.jpg -->
+        <img src="https://www.figma.com/api/mcp/asset/fbb37f39-a373-41ce-a27c-b1324836d6ef" alt="Eui-Sung Yi" />
+      </div>
+      <div class="person-info">
+        <div class="person-name">Eui-Sung<br>Yi</div>
+        <div class="name-rule"></div>
+        <div class="person-roles">
+          <div class="role-item"><div class="role-label">Director</div><div class="role-org">The Now Institute</div></div>
+          <div class="role-item"><div class="role-label">Principal</div><div class="role-org">Morphosis Architects</div></div>
+          <div class="role-item"><div class="role-label">Adjunct Associate Professor</div><div class="role-org">USC School of Architecture</div></div>
+          <div class="role-item"><div class="role-label">Lecturer</div><div class="role-org">SCI-Arc</div></div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Profile</div>
+    <div class="profile-body">
+      <p class="profile-text"><strong>Eui-Sung Yi</strong> is currently Design Principal at Morphosis Architects and Director of The Now Institute at UCLA's Department of Architecture and Urban Design. He received his Bachelor of Architecture at Cornell University and his Master of Architecture at Harvard University.</p>
+      <p class="profile-text">Yi has been involved with academia and scholarship for over fifteen years in Asia and the U.S. His current position of Director with The Now Institute is a 10-year culmination of research initiatives and speculations with Thom Mayne on emerging urban issues confronting major metropolises and disaster-stricken cities.</p>
+      <p class="profile-text">Yi has co-taught extensively in UCLA with Thom Mayne on urban research projects that ranged from Los Angeles to Madrid. Significantly, his team received an unprecedented P/A Award grand prize for LA Now: Vol. 3. His discourse on urbanism continued during his term in Asia where speculations on the most dynamic and unorthodox urban conditions are being created.</p>
+      <p class="profile-text">Professionally, Yi has worked extensively in Asia and the US. His 20-year history with Morphosis began in 1992. From 1994–1997, he co-managed the Korean office of Morphosis, where his team oversaw the design and construction of the Sun Tower — the first high-rise office to be built in the country. He wrote the report that advocated for the GSA to adopt sustainable green policies for all future projects, paving the way for the San Francisco Federal Building.</p>
+      <p class="profile-text">Most recently, he was the Vice President of Design at Chang-jo Architects in Korea, overseeing the completion of his competition-winning Korean Embassy in Tokyo, Japan and the Korean Consulate in Guangzhou, China.</p>
+      <p class="profile-text">The issue of urbanism continues to thread and anchor all scholarship throughout Yi's parallel academic and professional pursuits.</p>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Education</div>
+    <div class="edu-list">
+      <div class="edu-card"><div><div class="edu-degree">M.Arch. II</div><div class="edu-school">Harvard — Graduate School of Design</div></div></div>
+      <div class="edu-card"><div><div class="edu-degree">B.Arch.</div><div class="edu-school">Cornell University</div></div></div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Awards &amp; Distinctions</div>
+    <div class="awards-single">
+      <div class="award-card"><div class="award-year">2010</div><div class="award-title">First Prize, Korean Consulate Embassy, Guangzhou, China</div></div>
+      <div class="award-card"><div class="award-year">2008</div><div class="award-title">First Prize, Korean Embassy in Tokyo, Japan</div></div>
+      <div class="award-card"><div class="award-year">2007</div><div class="award-title">AIA National Convention Speaker, Sustainability, San Antonio</div></div>
+      <div class="award-card"><div class="award-year">2006</div><div class="award-title">AIA National Convention Speaker, Urban Design, Los Angeles</div></div>
+      <div class="award-card"><div class="award-year">2005</div><div class="award-title">Grand Prize, Progressive Architecture Award — L.A. Now: Volume 3</div></div>
+      <div class="award-card"><div class="award-year">1996</div><div class="award-title">ShinKenchiku Architectural Competition, Honorary Mention</div></div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Professional Associations</div>
+    <div class="assoc-single">
+      <div class="assoc-card"><span>Docomomo International / Executive Committee Member</span></div>
+      <div class="assoc-card"><span>Docomomo Korea / Director of Bidding Committee</span></div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Teaching</div>
+    <div class="teaching-list">
+      <div class="teaching-card">
+        <div class="teaching-inst">UCLA Department of Architecture and Urban Design</div>
+        <div class="teaching-location">Los Angeles, CA</div>
+        <div class="teaching-roles">Director, The Now Institute (2012–present)<br>Instructor, Graduate Research Studio (2002–2008)</div>
+      </div>
+      <div class="teaching-card">
+        <div class="teaching-inst">USC School of Architecture</div>
+        <div class="teaching-location">Los Angeles, CA</div>
+        <div class="teaching-roles">Korea Coordinator, Asian Architecture and Urbanism International Workshop (2011)<br>Director, Master of Architecture Programs (2007–2010)<br>Adjunct Associate Professor (2002–present)</div>
+      </div>
+      <div class="teaching-card">
+        <div class="teaching-inst">SCI-Arc</div>
+        <div class="teaching-location">Los Angeles, CA</div>
+        <div class="teaching-roles">Lecturer, Urban Systems (2012)<br>Speaker, Lecture Series – The Struggle for National Identity and Symbolism in Government Projects (2012)<br>Graduate Thesis Advisor (2000)</div>
+      </div>
+      <div class="teaching-card">
+        <div class="teaching-inst">Inha University</div>
+        <div class="teaching-location">Incheon, South Korea</div>
+        <div class="teaching-roles">Instructor, Graduate Architecture Studio (2011)<br>Instructor, Architecture Studio (2000)<br>Instructor, Architecture Studio (1996)</div>
+      </div>
+      <div class="teaching-card">
+        <div class="teaching-inst">Dalian Technical University</div>
+        <div class="teaching-location">Dalian, China</div>
+        <div class="teaching-roles">Instructor, Architecture Studio (2000)<br>Coordinator, International Workshop (2000)</div>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+    <div class="section-heading">Publications</div>
+    <div class="pub-list">
+      <div class="pub-card">TaeHeo Memorial Museum: Religious Signs and Spatial Semiotics. <em>Korean Institute of Architects Journal</em>, July–August, 2010.</div>
+      <div class="pub-card">Refuge: Dreams of 30 Incheon Architects. SpaceTime, 2009.</div>
+      <div class="pub-card">Editor. <em>Madrid Now</em>. Future Magazine, Spring, 2008.</div>
+      <div class="pub-card">Editor, Coordinator. <em>L.A. Now Vol. 3 + 4</em>. UC Press, 2006.</div>
+      <div class="pub-card">Editor. <em>Garden in the Machine</em>. Inha University Press, 1997.</div>
+    </div>
+
+  </div><!-- /eui -->
+
+</div><!-- /page -->
+
+<script>
+  document.querySelectorAll('.person-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var target = this.dataset.target;
+      document.querySelectorAll('.profile-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.person-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.getElementById('person-' + target).classList.add('active');
+      this.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>
